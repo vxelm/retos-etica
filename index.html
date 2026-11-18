@@ -368,28 +368,6 @@ html:not(.js) .concepto { grid-area: auto; }
   .caso .anio-c { font-size: 34px; }
 }
 
-/* Actividad */
-.actividad { background: var(--wine); }
-.actividad .wrap { display: flex; flex-direction: column; gap: 36px; }
-.actividad .kicker { color: #F6D88F; }
-.actividad .pregunta { font-size: clamp(20px, 2.4vw, 30px); max-width: 48ch; }
-.votos { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
-.voto {
-  display: flex; flex-direction: column; gap: 10px; text-align: left; cursor: pointer;
-  background: var(--wine-deep); border: 2px solid transparent; border-radius: 20px;
-  padding: 24px; color: var(--paper); font: inherit; position: relative; overflow: hidden;
-}
-.voto:hover { border-color: #F6D88F; }
-.voto:focus-visible { outline: 3px solid #F6D88F; outline-offset: 3px; }
-.voto .letra { font-family: var(--display); font-size: 56px; font-weight: 700; color: #F6D88F; line-height: 1; }
-.voto .txt { font-size: clamp(17px, 1.7vw, 21px); }
-.voto .cuenta { font-weight: 800; font-size: 16px; font-variant-numeric: tabular-nums; }
-.voto .barra-v { height: 6px; border-radius: 3px; background: rgba(243, 239, 230, 0.15); }
-.voto .barra-v i { display: block; height: 100%; border-radius: 3px; background: #F6D88F; width: 0; transition: width 0.4s; }
-.actividad .pie { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; color: #F0D6DD; font-size: 15px; }
-.actividad .btn { background: var(--wine-deep); }
-@media (max-width: 760px) { .votos { grid-template-columns: 1fr; } .voto { padding: 18px; } .voto .letra { font-size: 40px; } }
-
 /* Lotería */
 .loteria { background: var(--ink-2); }
 .loteria .wrap { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr); gap: 56px; align-items: center; }
@@ -437,7 +415,6 @@ html:not(.js) .concepto { grid-area: auto; }
   <a href="#libertad" data-g="libertad"><span>Libertad y voluntad</span><i></i></a>
   <a href="#educacion" data-g="educacion"><span>Educación y legislación</span><i></i></a>
   <a href="#dilemas" data-g="dilemas"><span>Dilemas éticos</span><i></i></a>
-  <a href="#actividad" data-g="actividad"><span>Actividad</span><i></i></a>
   <a href="#loteria" data-g="loteria"><span>Lotería</span><i></i></a>
   <a href="#cierre" data-g="cierre"><span>Cierre</span><i></i></a>
 </nav>
@@ -460,7 +437,7 @@ html:not(.js) .concepto { grid-area: auto; }
     <p class="escuela">ESCOM · IPN · Ingeniería en Sistemas Computacionales</p>
     <p class="baja"><i aria-hidden="true"></i>Desliza para comenzar</p>
   </div>
-  <aside class="nota" data-t="Portada · Todos">Presentarse brevemente. Es la última exposición de la Unidad IV. Hablaremos de tres retos actuales: qué tan libres somos frente a la tecnología (Moisés), qué papel tienen la educación y las leyes (Ángel Raúl) y qué dilemas enfrenta un ingeniero en sustentabilidad, salud y equidad de género (Axel). Al final, el grupo votará qué haría ante un dilema.</aside>
+  <aside class="nota" data-t="Portada · Todos">Presentarse brevemente. Es la última exposición de la Unidad IV. Hablaremos de tres retos actuales: qué tan libres somos frente a la tecnología (Moisés), qué papel tienen la educación y las leyes (Ángel Raúl) y qué dilemas enfrenta un ingeniero en sustentabilidad, salud y equidad de género (Axel). Al final jugaremos todos una lotería con los conceptos de la exposición.</aside>
 </section>
 
 <section class="scene pad" data-g="inicio" data-scene>
@@ -475,7 +452,7 @@ html:not(.js) .concepto { grid-area: auto; }
       <div class="fila reveal" style="--d:3"><p class="n">03</p><div><h3>Dilemas éticos en la ingeniería</h3><p>4.4.3 · Presenta: Axel M. Guzmán Vega</p></div></div>
     </div>
   </div>
-  <aside class="nota" data-t="Orden · Todos">Cada subtema tiene una idea central y un ejemplo actual. Al final votaremos todos qué haríamos ante un dilema real de ingeniería.</aside>
+  <aside class="nota" data-t="Orden · Todos">Cada subtema tiene una idea central y un ejemplo actual. Al final jugaremos todos una lotería desde el celular para repasar los conceptos.</aside>
 </section>
 
 <!-- 4.4.1 -->
@@ -641,24 +618,6 @@ html:not(.js) .concepto { grid-area: auto; }
     </div>
   </div>
   <aside class="nota" data-t="Casos · Axel">Las tarjetas avanzan de lado con el scroll. Sustentabilidad: en 2017 Apple reconoció que una actualización bajaba el rendimiento de iPhones con baterías viejas para evitar apagados; el problema fue no decirlo, porque mucha gente pensó que su teléfono ya no servía. Terminó pagando multas y acuerdos. Salud: el Therac-25 era una máquina de radioterapia controlada por software; quitaron los seguros físicos de modelos anteriores y confiaron en el código, que tenía errores. Entre 1985 y 1987 hubo varias sobredosis, algunas mortales. Equidad de género: en 2018 se supo que Amazon había descartado una IA de reclutamiento que penalizaba currículums con la palabra “mujeres”, porque se entrenó con diez años de contrataciones mayoritariamente de hombres. Nadie la programó para discriminar: aprendió de los datos.</aside>
-</section>
-
-<!-- Actividad -->
-<section class="scene pad actividad" id="actividad" data-g="actividad" data-p="Todos" data-scene>
-  <div class="wrap">
-    <div class="reveal" style="display:flex;flex-direction:column;gap:16px">
-      <p class="kicker">Actividad · Levanten la mano</p>
-      <h2 class="h2">¿Tú qué harías?</h2>
-      <p class="pregunta">Tu jefe te pide lanzar el viernes una app de salud, aunque las pruebas de seguridad todavía no terminan. Si se retrasa, el cliente cancela el contrato.</p>
-    </div>
-    <div class="votos">
-      <button class="voto reveal" style="--d:1" type="button" id="voto-a" data-v="0"><span class="letra">A</span><span class="txt">Lanzarla a tiempo y corregir los errores después.</span><span class="barra-v"><i></i></span><span class="cuenta">0 votos</span></button>
-      <button class="voto reveal" style="--d:2" type="button" id="voto-b" data-v="1"><span class="letra">B</span><span class="txt">Retrasarla y explicar el riesgo por escrito al cliente.</span><span class="barra-v"><i></i></span><span class="cuenta">0 votos</span></button>
-      <button class="voto reveal" style="--d:3" type="button" id="voto-c" data-v="2"><span class="letra">C</span><span class="txt">Lanzar sólo las funciones ya probadas y avisar a los usuarios.</span><span class="barra-v"><i></i></span><span class="cuenta">0 votos</span></button>
-    </div>
-    <div class="pie"><span>Toca una opción para sumar un voto por cada mano levantada.</span><button class="btn" type="button" id="reiniciar">Reiniciar votos</button></div>
-  </div>
-  <aside class="nota" data-t="Actividad · Todos">Leer el dilema y pedir que levanten la mano por A, B o C. Tocar cada opción para contar los votos. Preguntar a una persona de cada opción por qué la eligió. Relacionar con lo visto: la opción A recuerda al Therac-25; la B protege a los usuarios pero tiene un costo; la C busca un punto medio con transparencia. No hay respuesta perfecta, y eso es justamente un dilema.</aside>
 </section>
 
 <!-- Lotería -->
@@ -883,18 +842,6 @@ html:not(.js) .concepto { grid-area: auto; }
     } catch (er) {}
   }
 
-  // Votación
-  var votos = [0, 0, 0];
-  var botones = $$('.voto');
-  function pintar() {
-    var mx = Math.max(1, Math.max.apply(null, votos));
-    botones.forEach(function (b, i) {
-      $('.cuenta', b).textContent = votos[i] + (votos[i] === 1 ? ' voto' : ' votos');
-      $('.barra-v i', b).style.width = (votos[i] / mx * 100) + '%';
-    });
-  }
-  botones.forEach(function (b) { b.addEventListener('click', function () { votos[+b.dataset.v]++; pintar(); }); });
-  $('#reiniciar').addEventListener('click', function () { votos = [0, 0, 0]; pintar(); });
 })();
 </script>
 </body>
