@@ -1,0 +1,901 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Retos actuales 4.4</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Domine:wght@400..700&family=Nunito+Sans:wght@400;600;700;800&display=swap">
+<style>
+/* Layout: presentación vertical por escenas; las escenas largas fijan su contenido (sticky) y el scroll lo va transformando. */
+:root {
+  --ink: #0F1823;
+  --ink-2: #172434;
+  --ink-3: #22344A;
+  --paper: #F3EFE6;
+  --muted: #A9B5C2;
+  --gold: #E3B34C;
+  --rose: #E58AA2;
+  --wine: #8C2341;
+  --wine-deep: #6E1A33;
+  --blue: #7FB2E0;
+  --line: rgba(243, 239, 230, 0.14);
+  --display: 'Domine', Georgia, serif;
+  --text: 'Nunito Sans', 'Segoe UI', Arial, sans-serif;
+  --gutter-l: max(16px, env(safe-area-inset-left, 0px));
+  --gutter-r: max(16px, env(safe-area-inset-right, 0px));
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+img { max-width: 100%; }
+html { scroll-behavior: auto; }
+body {
+  margin: 0;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--text);
+  font-size: 18px;
+  line-height: 1.5;
+  overflow-x: hidden;
+}
+h1, h2, h3, p { margin: 0; }
+h1, h2 { font-family: var(--display); font-weight: 700; line-height: 1.1; text-wrap: balance; }
+.wrap {
+  width: 100%;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding-left: calc(var(--gutter-l) + 24px);
+  padding-right: calc(var(--gutter-r) + 24px);
+}
+@media (max-width: 700px) {
+  .wrap { padding-left: var(--gutter-l); padding-right: var(--gutter-r); }
+}
+.kicker {
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+.lead { font-size: clamp(18px, 2vw, 24px); color: var(--muted); max-width: 62ch; }
+.lead b { color: var(--paper); }
+.h2 { font-size: clamp(34px, 5.4vw, 68px); }
+
+/* Barra de progreso, presentador y navegación */
+.progress {
+  position: fixed; top: 0; left: 0; right: 0; height: calc(4px + env(safe-area-inset-top, 0px));
+  padding-top: env(safe-area-inset-top, 0px); z-index: 30; pointer-events: none;
+}
+.progress i { display: block; height: 4px; background: var(--gold); transform-origin: 0 50%; transform: scaleX(0); }
+.presenta {
+  position: fixed; z-index: 25;
+  top: calc(16px + env(safe-area-inset-top, 0px));
+  left: calc(16px + env(safe-area-inset-left, 0px));
+  font-size: 14px; font-weight: 700; color: var(--paper);
+  background: rgba(15, 24, 35, 0.78); border: 1px solid var(--line);
+  padding: 6px 14px; border-radius: 999px; backdrop-filter: blur(8px);
+  transition: opacity 0.3s;
+}
+.presenta span { color: var(--gold); }
+.presenta.vacio { opacity: 0; }
+.rail {
+  position: fixed; z-index: 25; top: 50%; transform: translateY(-50%);
+  right: calc(20px + env(safe-area-inset-right, 0px));
+  display: flex; flex-direction: column; gap: 14px;
+}
+.rail a {
+  display: flex; align-items: center; justify-content: flex-end; gap: 10px;
+  color: var(--muted); text-decoration: none; font-size: 13px; font-weight: 700;
+}
+.rail a span { opacity: 0; transform: translateX(6px); transition: 0.25s; }
+.rail a i { width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--muted); transition: 0.25s; }
+.rail a.on { color: var(--paper); }
+.rail a.on span, .rail a:focus-visible span { opacity: 1; transform: none; }
+.rail a.on i { background: var(--gold); border-color: var(--gold); transform: scale(1.3); }
+.rail a:focus-visible { outline: 2px solid var(--gold); outline-offset: 4px; border-radius: 4px; }
+@media (max-width: 900px) { .rail { display: none; } }
+
+.herr {
+  position: fixed; z-index: 25;
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  right: calc(16px + env(safe-area-inset-right, 0px));
+  display: flex; gap: 8px; align-items: center;
+}
+.btn {
+  font: 700 14px var(--text); color: var(--paper); cursor: pointer;
+  background: var(--ink-2); border: 1px solid var(--line);
+  padding: 8px 14px; border-radius: 999px;
+}
+.btn:hover { border-color: var(--gold); }
+.btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+.atajos { font-size: 13px; color: var(--muted); }
+@media (max-width: 700px) { .atajos { display: none; } }
+.notas {
+  position: fixed; z-index: 26;
+  left: calc(16px + env(safe-area-inset-left, 0px));
+  bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+  width: min(560px, calc(100vw - 32px));
+  max-height: 45vh; overflow: auto;
+  background: var(--ink-2); border: 1px solid var(--gold); border-radius: 16px;
+  padding: 18px 20px; font-size: 16px; color: var(--paper);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+.notas h3 { font-size: 13px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gold); margin-bottom: 8px; }
+.nota { display: none; }
+
+/* Escenas */
+.scene { position: relative; }
+.pad { padding-block: clamp(96px, 16vh, 160px); }
+.tall { height: 300vh; }
+.tall.t2 { height: 220vh; }
+.tall.t4 { height: 420vh; }
+.sticky {
+  position: sticky; top: 0;
+  height: 100vh; height: 100svh;
+  display: flex; align-items: center;
+  overflow: hidden;
+}
+
+/* Aparición al hacer scroll (sólo con JS activo) */
+.js .reveal { opacity: 0; transform: translateY(40px); transition: opacity 0.8s ease, transform 0.8s cubic-bezier(.2,.7,.2,1); transition-delay: calc(var(--d, 0) * 120ms); }
+.js .reveal.in { opacity: 1; transform: none; }
+
+/* Portada */
+.hero { min-height: 100vh; min-height: 100svh; display: flex; align-items: center; overflow: hidden; }
+.hero .wrap { display: flex; flex-direction: column; gap: 36px; transform: translateY(calc(var(--hp, 0) * -80px)); opacity: calc(1 - var(--hp, 0) * 1.2); }
+.hero h1 { font-size: clamp(40px, 7vw, 104px); max-width: 15ch; }
+.hero h1 .w { display: inline-block; animation: sube 0.9s cubic-bezier(.2,.7,.2,1) both; animation-delay: calc(var(--i) * 70ms + 150ms); }
+@keyframes sube { from { opacity: 0; transform: translateY(0.5em); } to { opacity: 1; transform: none; } }
+.hero .rule { width: 200px; height: 2px; background: var(--gold); transform-origin: 0 50%; animation: linea 1s 1s cubic-bezier(.2,.7,.2,1) both; }
+@keyframes linea { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+.nombres { display: flex; flex-wrap: wrap; gap: 8px 40px; font-size: clamp(17px, 2vw, 22px); font-weight: 700; }
+.escuela { color: var(--muted); font-size: 16px; }
+.baja { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 15px; font-weight: 700; }
+.baja i { width: 22px; height: 34px; border: 2px solid var(--muted); border-radius: 12px; position: relative; }
+.baja i::after { content: ""; position: absolute; left: 50%; top: 6px; width: 4px; height: 8px; margin-left: -2px; border-radius: 2px; background: var(--gold); animation: rueda 1.6s ease-in-out infinite; }
+@keyframes rueda { 0% { transform: translateY(0); opacity: 1; } 70% { transform: translateY(12px); opacity: 0; } 100% { opacity: 0; } }
+.orbes { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.orbes b { position: absolute; border-radius: 50%; filter: blur(60px); opacity: 0.35; }
+.orbes b:nth-child(1) { width: 46vw; height: 46vw; right: -12vw; top: -10vw; background: var(--wine); transform: translateY(calc(var(--hp, 0) * 160px)); }
+.orbes b:nth-child(2) { width: 30vw; height: 30vw; right: 18vw; bottom: -14vw; background: #2B4C6E; transform: translateY(calc(var(--hp, 0) * -120px)); }
+
+/* Agenda */
+.agenda { display: flex; flex-direction: column; gap: 48px; }
+.filas { display: flex; flex-direction: column; }
+.fila {
+  display: grid; grid-template-columns: 110px 1fr; gap: 24px; align-items: center;
+  padding: 28px 0; border-top: 1px solid var(--line);
+}
+.fila:last-child { border-bottom: 1px solid var(--line); }
+.fila .n { font-family: var(--display); font-size: clamp(44px, 6vw, 72px); font-weight: 700; color: var(--rose); line-height: 1; }
+.fila h3 { font-size: clamp(22px, 3vw, 36px); font-weight: 800; }
+.fila p { color: var(--muted); font-size: 16px; }
+@media (max-width: 560px) { .fila { grid-template-columns: 64px 1fr; } }
+
+/* Separador de sección */
+.portadilla { min-height: 100vh; min-height: 100svh; display: flex; align-items: center; }
+.portadilla .wrap { display: flex; flex-direction: column; gap: 20px; }
+.portadilla .num { font-family: var(--display); font-size: clamp(120px, 26vw, 340px); line-height: 0.85; color: transparent; -webkit-text-stroke: 2px var(--rose); transform: translateX(calc((var(--p, 0.5) - 0.5) * -12vw)); }
+.portadilla h2 { font-size: clamp(36px, 6vw, 80px); }
+.portadilla .quien { color: var(--muted); font-weight: 700; font-size: 18px; }
+
+/* 4.4.1 Conceptos */
+.conceptos .wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; }
+.conceptos .izq { display: flex; flex-direction: column; gap: 24px; }
+.pips { display: flex; gap: 8px; }
+.pips i { width: 40px; height: 4px; border-radius: 2px; background: var(--ink-3); transition: background 0.3s; }
+.pips i.on { background: var(--gold); }
+.pila { display: grid; }
+.concepto {
+  grid-area: 1 / 1; display: flex; flex-direction: column; gap: 14px;
+  background: var(--ink-2); border: 1px solid var(--line); border-radius: 24px;
+  padding: clamp(28px, 4vw, 48px);
+}
+.concepto .tag { font-size: 14px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: var(--blue); }
+.concepto h3 { font-family: var(--display); font-size: clamp(32px, 4.4vw, 56px); color: var(--paper); }
+.concepto p { font-size: clamp(18px, 1.8vw, 22px); color: var(--muted); }
+.concepto .big { font-family: var(--display); font-size: clamp(64px, 9vw, 120px); color: var(--rose); line-height: 1; }
+.js .concepto { opacity: 0; transform: translateY(60px) scale(0.96); transition: opacity 0.5s, transform 0.6s cubic-bezier(.2,.7,.2,1); }
+.js .concepto.antes { opacity: 0; transform: translateY(-60px) scale(0.96); }
+.js .concepto.on { opacity: 1; transform: none; }
+html:not(.js) .pila { gap: 16px; }
+html:not(.js) .concepto { grid-area: auto; }
+@media (max-width: 860px) {
+  .conceptos .wrap { grid-template-columns: 1fr; gap: 28px; }
+}
+
+/* 4.4.1 Ejemplo: feed */
+.feed .wrap { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: 56px; align-items: center; }
+.tel {
+  justify-self: center; position: relative;
+  width: min(320px, 72vw); height: min(620px, 72vh);
+  border-radius: 44px; border: 10px solid #26364A; background: #0B121B;
+  overflow: hidden; box-shadow: 0 40px 80px rgba(0, 0, 0, 0.5);
+}
+.tel .barra { position: absolute; z-index: 2; left: 0; right: 0; top: 0; padding: 14px 18px; display: flex; justify-content: space-between; font-size: 13px; font-weight: 800; background: linear-gradient(#0B121B, rgba(11, 18, 27, 0)); }
+.tel .tiempo { color: var(--gold); font-variant-numeric: tabular-nums; }
+.posts { display: flex; flex-direction: column; gap: 14px; padding: 52px 14px 14px; transform: translateY(calc(var(--p, 0) * var(--recorrido, -2000px))); }
+.post { background: #142131; border-radius: 16px; padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+.post .cab { display: flex; gap: 10px; align-items: center; }
+.post .av { width: 30px; height: 30px; border-radius: 50%; }
+.post .ln { height: 9px; border-radius: 5px; background: #2A3B50; }
+.post .img { height: 150px; border-radius: 10px; }
+.post .acc { display: flex; gap: 14px; font-size: 13px; color: var(--muted); font-weight: 700; }
+.tel .aviso {
+  position: absolute; z-index: 3; left: 14px; right: 14px; bottom: 16px;
+  background: var(--paper); color: var(--ink); border-radius: 16px; padding: 14px 16px;
+  font-size: 15px; font-weight: 700; line-height: 1.35;
+  opacity: 0; transform: translateY(20px); transition: 0.4s;
+}
+.tel .aviso.on { opacity: 1; transform: none; }
+.lado { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+.lado .h2 { font-size: clamp(30px, 4.2vw, 54px); }
+.cuadro { border-radius: 18px; padding: 22px 26px; display: flex; flex-direction: column; gap: 6px; background: var(--ink-2); border: 1px solid var(--line); }
+.cuadro h3 { font-size: 15px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; }
+.cuadro p { font-size: clamp(17px, 1.7vw, 20px); color: var(--paper); }
+.cuadro.mal { border-left: 6px solid var(--rose); }
+.cuadro.mal h3 { color: var(--rose); }
+.cuadro.bien { border-left: 6px solid var(--blue); }
+.cuadro.bien h3 { color: var(--blue); }
+.js .feed .cuadro.paso { opacity: 0.12; transform: translateX(30px); transition: 0.5s; }
+.js .feed .cuadro.paso.on { opacity: 1; transform: none; }
+@media (max-width: 860px) {
+  .feed .wrap { grid-template-columns: 1fr; gap: 20px; }
+  .tel { height: min(400px, 46vh); width: min(260px, 70vw); }
+  .feed .lado .h2 { font-size: 26px; }
+  .feed .lead { display: none; }
+  .cuadro { padding: 14px 18px; }
+}
+
+/* 4.4.2 Línea del tiempo */
+.linea .wrap { display: flex; flex-direction: column; gap: 32px; }
+.linea .top { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; flex-wrap: wrap; }
+.anio { font-family: var(--display); font-size: clamp(64px, 10vw, 140px); line-height: 0.9; color: var(--gold); font-variant-numeric: tabular-nums; }
+.eje { position: relative; height: 380px; }
+.pista { position: absolute; left: 0; right: 0; height: 4px; border-radius: 2px; background: var(--ink-3); }
+.pista.tec { top: 140px; }
+.pista.ley { top: 236px; }
+.pista i { display: block; height: 100%; border-radius: 2px; width: calc(var(--p, 0) * 100%); }
+.pista.tec i { background: var(--blue); }
+.pista.ley i { background: var(--rose); }
+.etq { position: absolute; left: 0; font-size: 13px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; }
+.etq.tec { top: 108px; color: var(--blue); }
+.etq.ley { top: 252px; color: var(--rose); }
+.cursor { position: absolute; top: 90px; height: 190px; width: 2px; background: var(--gold); left: calc(var(--p, 0) * 100%); }
+.ev { position: absolute; left: calc(var(--x) * 1%); width: 170px; margin-left: -8px; display: flex; flex-direction: column; gap: 4px; transition: opacity 0.4s, transform 0.4s; }
+.ev .y { font-family: var(--display); font-weight: 700; font-size: 22px; }
+.ev p { font-size: 14px; line-height: 1.3; color: var(--muted); }
+.ev::before { content: ""; position: absolute; left: 1px; width: 14px; height: 14px; border-radius: 50%; }
+.ev.tec { bottom: calc(380px - 132px); }
+.ev.tec::before { bottom: -22px; background: var(--blue); }
+.ev.tec .y { color: var(--blue); }
+.ev.ley { top: 254px; }
+.ev.ley.r2 { top: 254px; padding-top: 64px; }
+.ev.ley::before { top: -26px; background: var(--rose); }
+.ev.ley .y { color: var(--rose); }
+.ev.der { margin-left: -162px; text-align: right; }
+.ev.der::before { left: auto; right: 1px; }
+.js .ev { opacity: 0; transform: translateY(10px); }
+.js .ev.on { opacity: 1; transform: none; }
+.conclusion { font-family: var(--display); font-size: clamp(22px, 3vw, 36px); max-width: 30ch; transition: 0.6s; }
+.js .conclusion { opacity: 0; }
+.js .conclusion.on { opacity: 1; }
+@media (max-width: 860px) {
+  .eje { height: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 10px 16px; }
+  .pista, .cursor, .etq { display: none; }
+  .ev, .ev.der, .ev.ley.r2 { position: static; width: auto; margin: 0; padding: 0 0 0 18px; text-align: left; border-left: 3px solid var(--blue); }
+  .ev.ley, .ev.ley.r2 { border-left-color: var(--rose); }
+  .ev::before { display: none; }
+  .ev .y { font-size: 18px; }
+  .ev p { font-size: 13px; }
+}
+
+/* 4.4.2 Ejemplo: chat */
+.chat .wrap { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 56px; align-items: center; }
+.grupo { background: var(--ink-2); border: 1px solid var(--line); border-radius: 24px; padding: 20px; display: flex; flex-direction: column; gap: 12px; }
+.grupo .cab { display: flex; align-items: center; gap: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--line); }
+.grupo .cab b { font-size: 16px; }
+.grupo .cab span { font-size: 13px; color: var(--muted); }
+.grupo .ico { width: 38px; height: 38px; border-radius: 50%; background: var(--ink-3); display: grid; place-items: center; font-weight: 800; color: var(--gold); }
+.msg { max-width: 80%; padding: 10px 14px; border-radius: 16px; font-size: 16px; line-height: 1.35; }
+.msg small { display: block; font-size: 12px; font-weight: 800; color: var(--gold); margin-bottom: 2px; }
+.msg.otro { background: var(--ink-3); align-self: flex-start; border-bottom-left-radius: 4px; }
+.msg.img { background: var(--ink-3); align-self: flex-start; width: 220px; max-width: 80%; }
+.msg.img .falsa { height: 120px; border-radius: 10px; background: repeating-linear-gradient(45deg, #3A4C63 0 12px, #33445A 12px 24px); display: grid; place-items: center; font-size: 13px; font-weight: 800; color: var(--paper); text-align: center; padding: 8px; }
+.msg.yo { background: #2B4C6E; align-self: flex-end; border-bottom-right-radius: 4px; }
+.js .chat .msg { opacity: 0; transform: translateY(16px) scale(0.98); transition: 0.4s; }
+.js .chat .msg.on { opacity: 1; transform: none; }
+.js .chat .cuadro.paso { opacity: 0.12; transition: 0.5s; }
+.js .chat .cuadro.paso.on { opacity: 1; }
+@media (max-width: 860px) {
+  .chat .wrap { grid-template-columns: 1fr; gap: 20px; }
+  .chat .lado .h2 { font-size: 26px; }
+  .msg { font-size: 14px; }
+  .msg.img .falsa { height: 70px; }
+  .grupo { padding: 14px; gap: 8px; }
+}
+
+/* 4.4.3 Balanza */
+.balanza .wrap { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); gap: 48px; align-items: center; }
+.balanza .izq { display: flex; flex-direction: column; gap: 24px; }
+.campos { display: flex; flex-wrap: wrap; gap: 10px; }
+.campos span { padding: 8px 16px; border-radius: 999px; border: 1px solid var(--line); font-weight: 700; font-size: 16px; background: var(--ink-2); }
+.bal { position: relative; width: min(440px, 80vw); height: 360px; justify-self: center; }
+.bal .poste { position: absolute; left: 50%; top: 60px; bottom: 30px; width: 8px; margin-left: -4px; background: var(--ink-3); border-radius: 4px; }
+.bal .base { position: absolute; left: 50%; bottom: 20px; width: 180px; margin-left: -90px; height: 14px; border-radius: 7px; background: var(--ink-3); }
+.bal .viga { position: absolute; left: 4%; right: 4%; top: 52px; height: 8px; border-radius: 4px; background: var(--gold); transform: rotate(var(--ang, 0deg)); }
+.bal .eje-c { position: absolute; left: 50%; top: 44px; width: 24px; height: 24px; margin-left: -12px; border-radius: 50%; background: var(--gold); }
+.plato { position: absolute; top: 4px; width: 150px; margin-left: -75px; display: flex; flex-direction: column; align-items: center; transform: rotate(calc(var(--ang, 0deg) * -1)); transform-origin: 50% 0; }
+.plato.a { left: 0; }
+.plato.b { left: 100%; }
+.plato .hilo { width: 2px; height: 70px; background: var(--muted); }
+.plato .caja { width: 150px; padding: 14px 10px; border-radius: 0 0 70px 70px; text-align: center; font-weight: 800; font-size: 16px; line-height: 1.25; }
+.plato.a .caja { background: var(--wine); }
+.plato.b .caja { background: #2B4C6E; }
+@media (max-width: 860px) {
+  .balanza .wrap { grid-template-columns: 1fr; gap: 8px; }
+  .bal { height: 260px; transform: scale(0.85); }
+  .balanza .lead { font-size: 17px; }
+}
+
+/* 4.4.3 Casos (scroll horizontal) */
+.casos .sticky { flex-direction: column; justify-content: center; align-items: stretch; gap: 32px; }
+.casos .cabeza { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; flex-wrap: wrap; }
+.puntos { display: flex; gap: 8px; }
+.puntos i { width: 34px; height: 4px; border-radius: 2px; background: var(--ink-3); transition: 0.3s; }
+.puntos i.on { background: var(--gold); }
+.riel { display: flex; gap: 28px; padding-left: max(calc(var(--gutter-l) + 24px), calc((100vw - 1240px) / 2 + 24px)); padding-right: 15vw; transform: translateX(var(--tx, 0px)); will-change: transform; }
+.caso {
+  flex: 0 0 min(520px, 82vw); display: flex; flex-direction: column; gap: 14px;
+  background: var(--ink-2); border: 1px solid var(--line); border-radius: 24px;
+  padding: clamp(24px, 3vw, 40px); transition: opacity 0.4s, transform 0.4s;
+}
+.js .caso { opacity: 0.4; transform: scale(0.95); }
+.js .caso.on { opacity: 1; transform: none; }
+.caso .tag { font-size: 13px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: var(--blue); }
+.caso h3 { font-family: var(--display); font-size: clamp(26px, 3vw, 38px); line-height: 1.15; }
+.caso .anio-c { font-family: var(--display); font-size: clamp(40px, 5vw, 64px); color: var(--rose); line-height: 1; }
+.caso p { font-size: clamp(16px, 1.6vw, 19px); color: var(--muted); }
+.caso .leccion { color: var(--paper); font-weight: 800; padding-top: 14px; border-top: 1px solid var(--line); }
+.caso.final { background: var(--gold); border-color: var(--gold); justify-content: center; }
+.caso.final h3 { color: var(--ink); font-size: clamp(26px, 3.2vw, 40px); }
+.caso.final .tag { color: var(--wine-deep); }
+@media (max-width: 860px) {
+  .casos .h2 { font-size: 30px; }
+  .caso { gap: 10px; }
+  .caso .anio-c { font-size: 34px; }
+}
+
+/* Actividad */
+.actividad { background: var(--wine); }
+.actividad .wrap { display: flex; flex-direction: column; gap: 36px; }
+.actividad .kicker { color: #F6D88F; }
+.actividad .pregunta { font-size: clamp(20px, 2.4vw, 30px); max-width: 48ch; }
+.votos { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+.voto {
+  display: flex; flex-direction: column; gap: 10px; text-align: left; cursor: pointer;
+  background: var(--wine-deep); border: 2px solid transparent; border-radius: 20px;
+  padding: 24px; color: var(--paper); font: inherit; position: relative; overflow: hidden;
+}
+.voto:hover { border-color: #F6D88F; }
+.voto:focus-visible { outline: 3px solid #F6D88F; outline-offset: 3px; }
+.voto .letra { font-family: var(--display); font-size: 56px; font-weight: 700; color: #F6D88F; line-height: 1; }
+.voto .txt { font-size: clamp(17px, 1.7vw, 21px); }
+.voto .cuenta { font-weight: 800; font-size: 16px; font-variant-numeric: tabular-nums; }
+.voto .barra-v { height: 6px; border-radius: 3px; background: rgba(243, 239, 230, 0.15); }
+.voto .barra-v i { display: block; height: 100%; border-radius: 3px; background: #F6D88F; width: 0; transition: width 0.4s; }
+.actividad .pie { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; color: #F0D6DD; font-size: 15px; }
+.actividad .btn { background: var(--wine-deep); }
+@media (max-width: 760px) { .votos { grid-template-columns: 1fr; } .voto { padding: 18px; } .voto .letra { font-size: 40px; } }
+
+/* Lotería */
+.loteria { background: var(--ink-2); }
+.loteria .wrap { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr); gap: 56px; align-items: center; }
+.loteria .izq { display: flex; flex-direction: column; gap: 24px; }
+.loteria .h2 { font-size: clamp(40px, 6.4vw, 84px); }
+.pasos-l { display: flex; flex-direction: column; gap: 14px; margin: 0; padding: 0; list-style: none; }
+.pasos-l li { display: grid; grid-template-columns: 48px 1fr; gap: 16px; align-items: start; font-size: clamp(17px, 1.8vw, 21px); }
+.pasos-l li b { font-family: var(--display); font-size: 32px; color: var(--gold); line-height: 1; }
+.loteria .der { display: flex; flex-direction: column; gap: 20px; align-items: center; }
+.qr-l { background: var(--paper); padding: 16px; border-radius: 20px; width: min(300px, 70vw); aspect-ratio: 1; display: grid; place-items: center; box-shadow: 0 30px 60px rgba(0, 0, 0, 0.45); }
+.qr-l img { width: 100%; height: 100%; image-rendering: pixelated; }
+.qr-l span { color: var(--ink); font-weight: 700; text-align: center; }
+.url-l { font-size: 15px; color: var(--muted); text-align: center; word-break: break-all; }
+.url-l b { color: var(--paper); }
+.btn-l { display: inline-flex; align-items: center; gap: 8px; text-decoration: none; font: 800 16px var(--text); color: var(--ink); background: var(--gold); padding: 12px 22px; border-radius: 999px; }
+.btn-l:hover { filter: brightness(1.08); }
+.btn-l:focus-visible { outline: 3px solid var(--paper); outline-offset: 3px; }
+.mazo { display: flex; padding-left: 36px; }
+.mazo i { width: 74px; aspect-ratio: 5 / 7; margin-left: -36px; border-radius: 8px; background: var(--paper); border: 4px solid var(--ink); box-shadow: 0 10px 20px rgba(0,0,0,0.35); transform: rotate(var(--r)); }
+.js .mazo i { opacity: 0; transform: translateY(30px) rotate(0); transition: 0.6s cubic-bezier(.2,.7,.2,1); transition-delay: calc(var(--k) * 90ms); }
+.js .mazo.in i { opacity: 1; transform: rotate(var(--r)); }
+.mazo i::after { content: ""; display: block; width: 44%; aspect-ratio: 1; margin: 34% auto 0; border-radius: 50%; background: var(--c); }
+@media (max-width: 860px) { .loteria .wrap { grid-template-columns: 1fr; gap: 32px; } }
+
+/* Cierre */
+.cierre { min-height: 100vh; min-height: 100svh; display: flex; align-items: center; }
+.cierre .wrap { display: flex; flex-direction: column; gap: 36px; }
+.cierre h2 { font-size: clamp(30px, 4.6vw, 64px); max-width: 24ch; line-height: 1.2; }
+.cierre h2 .m { color: var(--gold); }
+.cierre .preg { font-family: var(--display); font-size: clamp(28px, 3.6vw, 44px); color: var(--gold); }
+.cierre .nombres { color: var(--muted); font-size: 16px; font-weight: 600; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  .hero .wrap, .orbes b, .portadilla .num { transform: none !important; }
+}
+</style>
+</head>
+<body>
+<div class="progress" aria-hidden="true"><i id="barra"></i></div>
+<div class="presenta vacio" id="presenta" aria-live="polite">Presenta: <span id="presenta-nombre"></span></div>
+
+<nav class="rail" aria-label="Secciones">
+  <a href="#inicio" data-g="inicio"><span>Inicio</span><i></i></a>
+  <a href="#libertad" data-g="libertad"><span>Libertad y voluntad</span><i></i></a>
+  <a href="#educacion" data-g="educacion"><span>Educación y legislación</span><i></i></a>
+  <a href="#dilemas" data-g="dilemas"><span>Dilemas éticos</span><i></i></a>
+  <a href="#actividad" data-g="actividad"><span>Actividad</span><i></i></a>
+  <a href="#loteria" data-g="loteria"><span>Lotería</span><i></i></a>
+  <a href="#cierre" data-g="cierre"><span>Cierre</span><i></i></a>
+</nav>
+
+<div class="herr">
+  <span class="atajos">↓ ↑ o espacio para avanzar · N notas</span>
+  <button class="btn" id="btn-notas" type="button" aria-expanded="false" aria-controls="notas">Notas</button>
+</div>
+<div class="notas" id="notas" hidden><h3 id="notas-titulo">Notas</h3><p id="notas-texto"></p></div>
+
+<main>
+
+<section class="scene hero" id="inicio" data-g="inicio" data-scene>
+  <div class="orbes" aria-hidden="true"><b></b><b></b></div>
+  <div class="wrap">
+    <p class="kicker">Ingeniería, ética y sociedad · Unidad IV · Tema 4.4</p>
+    <h1 id="titulo">Retos actuales con implicaciones sociales, éticas, científicas e ingenieriles</h1>
+    <div class="rule"></div>
+    <div class="nombres"><span>Moisés Santa Cruz Rodríguez</span><span>Ángel Raúl Flores Gordillo</span><span>Axel M. Guzmán Vega</span></div>
+    <p class="escuela">ESCOM · IPN · Ingeniería en Sistemas Computacionales</p>
+    <p class="baja"><i aria-hidden="true"></i>Desliza para comenzar</p>
+  </div>
+  <aside class="nota" data-t="Portada · Todos">Presentarse brevemente. Es la última exposición de la Unidad IV. Hablaremos de tres retos actuales: qué tan libres somos frente a la tecnología (Moisés), qué papel tienen la educación y las leyes (Ángel Raúl) y qué dilemas enfrenta un ingeniero en sustentabilidad, salud y equidad de género (Axel). Al final, el grupo votará qué haría ante un dilema.</aside>
+</section>
+
+<section class="scene pad" data-g="inicio" data-scene>
+  <div class="wrap agenda">
+    <div class="reveal" style="display:flex;flex-direction:column;gap:14px">
+      <p class="kicker">Orden de la exposición</p>
+      <h2 class="h2">Tres retos para el ingeniero de hoy</h2>
+    </div>
+    <div class="filas">
+      <div class="fila reveal" style="--d:1"><p class="n">01</p><div><h3>Libertad y voluntad</h3><p>4.4.1 · Presenta: Moisés Santa Cruz Rodríguez</p></div></div>
+      <div class="fila reveal" style="--d:2"><p class="n">02</p><div><h3>Educación y legislación</h3><p>4.4.2 · Presenta: Ángel Raúl Flores Gordillo</p></div></div>
+      <div class="fila reveal" style="--d:3"><p class="n">03</p><div><h3>Dilemas éticos en la ingeniería</h3><p>4.4.3 · Presenta: Axel M. Guzmán Vega</p></div></div>
+    </div>
+  </div>
+  <aside class="nota" data-t="Orden · Todos">Cada subtema tiene una idea central y un ejemplo actual. Al final votaremos todos qué haríamos ante un dilema real de ingeniería.</aside>
+</section>
+
+<!-- 4.4.1 -->
+<section class="scene portadilla" id="libertad" data-g="libertad" data-p="Moisés Santa Cruz Rodríguez" data-scene data-scrub="portadilla">
+  <div class="wrap">
+    <p class="num" aria-hidden="true">01</p>
+    <p class="kicker reveal">4.4.1</p>
+    <h2 class="reveal" style="--d:1">Libertad y voluntad</h2>
+    <p class="quien reveal" style="--d:2">Presenta: Moisés Santa Cruz Rodríguez</p>
+  </div>
+  <aside class="nota" data-t="4.4.1 · Moisés">Introducir el subtema: ¿qué significa ser libre cuando muchas de nuestras decisiones pasan por una pantalla?</aside>
+</section>
+
+<section class="scene tall conceptos" data-g="libertad" data-p="Moisés Santa Cruz Rodríguez" data-scene data-scrub="conceptos" data-stops="0.16,0.5,0.84">
+  <div class="sticky">
+    <div class="wrap">
+      <div class="izq">
+        <p class="kicker">01 · Libertad y voluntad</p>
+        <h2 class="h2">Ser libre no es sólo poder elegir, sino decidir por razones propias</h2>
+        <p class="lead">La <b>libertad</b> es la capacidad de elegir entre opciones; la <b>voluntad</b> es la facultad de decidir y sostener esa elección. Hoy la tecnología influye en ambas.</p>
+        <div class="pips" aria-hidden="true"><i></i><i></i><i></i></div>
+      </div>
+      <div class="pila">
+        <div class="concepto"><p class="big">1</p><p class="tag">Libertad “de”</p><h3>Sin obstáculos</h3><p>Que nadie te impida actuar o expresarte. Es lo que solemos entender por ser libres.</p></div>
+        <div class="concepto"><p class="big">2</p><p class="tag">Libertad “para”</p><h3>Con medios</h3><p>Tener la información y los recursos para elegir de verdad, no sólo el permiso.</p></div>
+        <div class="concepto"><p class="big">3</p><p class="tag">Voluntad</p><h3>Con criterio</h3><p>Decidir por razones propias y sostener la decisión, en lugar de reaccionar por impulso.</p></div>
+      </div>
+    </div>
+  </div>
+  <aside class="nota" data-t="Conceptos · Moisés">Solemos pensar que somos libres si nadie nos prohíbe nada; a eso Isaiah Berlin lo llamó libertad negativa, o libertad “de”. Pero también hace falta libertad positiva, o libertad “para”: tener la información y los medios para elegir de verdad. La voluntad es lo que convierte esa libertad en una decisión propia, pensada, y no en una reacción automática. El reto actual es que muchas decisiones diarias (qué vemos, qué compramos, a quién leemos) pasan por sistemas diseñados por ingenieros, que pueden ampliar o reducir esa libertad.</aside>
+</section>
+
+<section class="scene tall feed" data-g="libertad" data-p="Moisés Santa Cruz Rodríguez" data-scene data-scrub="feed" data-stops="0.1,0.5,0.95">
+  <div class="sticky">
+    <div class="wrap">
+      <div class="tel" aria-label="Teléfono con un feed que no termina">
+        <div class="barra"><span>Inicio</span><span class="tiempo" id="tiempo">5 min</span></div>
+        <div class="posts" id="posts"></div>
+        <p class="aviso" id="aviso">Llevas una hora aquí. ¿Lo decidiste tú?</p>
+      </div>
+      <div class="lado">
+        <p class="kicker">Ejemplo · Libertad y voluntad</p>
+        <h2 class="h2">El scroll infinito: ¿decides tú o decide la app?</h2>
+        <p class="lead">Abres una red social “cinco minutos” y sales una hora después. El feed sin fin, la reproducción automática y las notificaciones están diseñados para que no te detengas.</p>
+        <div class="cuadro mal paso" id="feed-mal"><h3>Lo fácil</h3><p>Optimizar el tiempo de uso a toda costa: más minutos, más anuncios vendidos.</p></div>
+        <div class="cuadro bien paso" id="feed-bien"><h3>Lo ético</h3><p>Diseñar para que el usuario decida: pausas, límites visibles y nada de patrones oscuros.</p></div>
+      </div>
+    </div>
+  </div>
+  <aside class="nota" data-t="Ejemplo · Moisés">Al hacer scroll el reloj del teléfono avanza: preguntar al grupo cuánto tiempo pasaron ayer en redes y si lo decidieron. Nadie nos obliga a seguir viendo, así que tenemos libertad “de”; pero el diseño aprovecha nuestros impulsos y debilita la voluntad. Los patrones oscuros (dark patterns) son diseños que empujan al usuario a hacer algo que no habría elegido, como suscripciones difíciles de cancelar. Como futuros ingenieros, nosotros escribiremos ese código. Paso la palabra a Ángel Raúl.</aside>
+</section>
+
+<!-- 4.4.2 -->
+<section class="scene portadilla" id="educacion" data-g="educacion" data-p="Ángel Raúl Flores Gordillo" data-scene data-scrub="portadilla">
+  <div class="wrap">
+    <p class="num" aria-hidden="true">02</p>
+    <p class="kicker reveal">4.4.2</p>
+    <h2 class="reveal" style="--d:1">Educación y legislación</h2>
+    <p class="quien reveal" style="--d:2">Presenta: Ángel Raúl Flores Gordillo</p>
+  </div>
+  <aside class="nota" data-t="4.4.2 · Ángel Raúl">Introducir el subtema: ¿quién pone los límites a la tecnología, la ley o nosotros mismos?</aside>
+</section>
+
+<section class="scene tall linea" data-g="educacion" data-p="Ángel Raúl Flores Gordillo" data-scene data-scrub="linea" data-stops="0.08,0.5,1">
+  <div class="sticky">
+    <div class="wrap">
+      <div class="top">
+        <div style="display:flex;flex-direction:column;gap:14px;max-width:760px">
+          <p class="kicker">02 · Educación y legislación</p>
+          <h2 class="h2">La tecnología avanza más rápido que la ley</h2>
+        </div>
+        <p class="anio" id="anio" aria-live="off">2005</p>
+      </div>
+      <div class="eje" id="eje">
+        <span class="etq tec">Tecnología</span>
+        <span class="etq ley">Ley</span>
+        <div class="pista tec"><i></i></div>
+        <div class="pista ley"><i></i></div>
+        <div class="cursor" aria-hidden="true"></div>
+        <div class="ev tec" data-y="2007"><p class="y">2007</p><p>Llega el smartphone moderno.</p></div>
+        <div class="ev tec" data-y="2017"><p class="y">2017</p><p>Se populariza el término “deepfake”.</p></div>
+        <div class="ev tec der" data-y="2022"><p class="y">2022</p><p>ChatGPT lleva la IA generativa a todos.</p></div>
+        <div class="ev ley" data-y="2010"><p class="y">2010</p><p>Ley de Protección de Datos Personales (México).</p></div>
+        <div class="ev ley r2" data-y="2018"><p class="y">2018</p><p>RGPD: protección de datos en la UE.</p></div>
+        <div class="ev ley" data-y="2021"><p class="y">2021</p><p>Ley Olimpia: violencia digital (México).</p></div>
+        <div class="ev ley r2 der" data-y="2024"><p class="y">2024</p><p>Ley de IA de la Unión Europea.</p></div>
+        <div class="ev ley der" data-y="2025"><p class="y">2025</p><p>Nueva ley de datos personales (México).</p></div>
+      </div>
+      <p class="conclusion" id="conclusion">La ley marca el mínimo y llega tarde. La educación forma el criterio para actuar mientras tanto.</p>
+    </div>
+  </div>
+  <aside class="nota" data-t="Línea del tiempo · Ángel Raúl">Al hacer scroll avanzan los años: arriba la tecnología, abajo la ley. Primero llega la tecnología, después los problemas y al final la ley. Por eso la ley es necesaria pero no suficiente: marca lo mínimo que no puedes hacer, no todo lo que deberías hacer. En México, la protección de datos personales en manos de empresas tiene su propia ley federal, renovada en 2025; la Ley Olimpia es un conjunto de reformas contra la violencia digital. En Europa, el RGPD y la Ley de Inteligencia Artificial son referencia mundial. La educación es la otra mitad: un ingeniero que entiende por qué existen estas leyes puede anticipar problemas que todavía no están regulados.</aside>
+</section>
+
+<section class="scene tall chat" data-g="educacion" data-p="Ángel Raúl Flores Gordillo" data-scene data-scrub="chat" data-stops="0.1,0.45,0.75,1">
+  <div class="sticky">
+    <div class="wrap">
+      <div class="grupo" aria-label="Conversación de ejemplo en un grupo del salón">
+        <div class="cab"><span class="ico" aria-hidden="true">4C</span><div><b>Grupo del salón</b><br><span>32 participantes</span></div></div>
+        <div class="msg otro"><small>Compañero</small>Miren lo que hice con una app de IA 😂</div>
+        <div class="msg img"><small>Compañero</small><div class="falsa">Imagen falsa de una compañera</div></div>
+        <div class="msg otro"><small>Compañero</small>Es falso, es broma. Pásenla.</div>
+        <div class="msg yo"><small>Tú</small>No la voy a reenviar. Esto se reporta.</div>
+      </div>
+      <div class="lado">
+        <p class="kicker">Ejemplo · Educación y legislación</p>
+        <h2 class="h2">Deepfakes en el grupo del salón</h2>
+        <div class="cuadro mal paso" id="chat-ley"><h3>Lo que pone la ley</h3><p>La Ley Olimpia castiga difundir contenido íntimo sin consentimiento; aplicarla a imágenes creadas con IA todavía es un reto.</p></div>
+        <div class="cuadro bien paso" id="chat-edu"><h3>Lo que pone la educación</h3><p>Entender que “es falso” no lo hace inofensivo: no reenviarlo, reportarlo y apoyar a la víctima.</p></div>
+      </div>
+    </div>
+  </div>
+  <aside class="nota" data-t="Ejemplo · Ángel Raúl">Los mensajes van apareciendo con el scroll. Este caso junta los dos temas. La tecnología para crear deepfakes ya está al alcance de cualquiera, y la ley va detrás tratando de alcanzarla. Mientras tanto, lo que frena el daño es la educación: saber que la víctima sufre igual aunque la imagen sea falsa, y que reenviar también es participar. Para quien desarrolla estas apps también hay una pregunta: ¿qué medidas pongo para que mi herramienta no se use así? Paso la palabra a Axel.</aside>
+</section>
+
+<!-- 4.4.3 -->
+<section class="scene portadilla" id="dilemas" data-g="dilemas" data-p="Axel M. Guzmán Vega" data-scene data-scrub="portadilla">
+  <div class="wrap">
+    <p class="num" aria-hidden="true">03</p>
+    <p class="kicker reveal">4.4.3</p>
+    <h2 class="reveal" style="--d:1">Dilemas éticos en la ingeniería</h2>
+    <p class="quien reveal" style="--d:2">Presenta: Axel M. Guzmán Vega</p>
+  </div>
+  <aside class="nota" data-t="4.4.3 · Axel">Introducir el subtema: sustentabilidad, salud y equidad de género.</aside>
+</section>
+
+<section class="scene tall t2 balanza" data-g="dilemas" data-p="Axel M. Guzmán Vega" data-scene data-scrub="balanza" data-stops="0,1">
+  <div class="sticky">
+    <div class="wrap">
+      <div class="izq">
+        <p class="kicker">03 · Dilemas éticos en la ingeniería</p>
+        <h2 class="h2">Funciona, pero ¿a quién beneficia y a quién daña?</h2>
+        <p class="lead">Un dilema ético surge cuando dos valores chocan: <b>costo contra seguridad</b>, rapidez contra cuidado. El programa señala tres campos donde ocurre:</p>
+        <div class="campos"><span>Sustentabilidad</span><span>Salud</span><span>Equidad de género</span></div>
+      </div>
+      <div class="bal" aria-label="Balanza que se inclina entre costo y rapidez contra seguridad y personas">
+        <div class="poste"></div><div class="base"></div>
+        <div class="viga" id="viga">
+          <div class="plato a"><div class="hilo"></div><div class="caja">Costo y rapidez</div></div>
+          <div class="plato b"><div class="hilo"></div><div class="caja">Seguridad y personas</div></div>
+        </div>
+        <div class="eje-c"></div>
+      </div>
+    </div>
+  </div>
+  <aside class="nota" data-t="Dilemas · Axel">La balanza se inclina con el scroll. Un dilema no es elegir entre el bien y el mal, porque eso sería fácil. Es elegir entre dos cosas que valen: entregar a tiempo o probar más, abaratar el producto o hacerlo durar. En ingeniería estas decisiones afectan a personas que nunca conoceremos. Vamos a ver un caso real de cada campo.</aside>
+</section>
+
+<section class="scene tall t4 casos" data-g="dilemas" data-p="Axel M. Guzmán Vega" data-scene data-scrub="casos" data-stops="0,0.333,0.667,1">
+  <div class="sticky">
+    <div class="wrap cabeza">
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <p class="kicker">Ejemplos · Dilemas éticos</p>
+        <h2 class="h2">Tres casos reales, tres lecciones</h2>
+      </div>
+      <div class="puntos" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    </div>
+    <div class="riel" id="riel">
+      <article class="caso"><p class="tag">Sustentabilidad</p><p class="anio-c">2017</p><h3>Baterías de iPhone</h3><p>Apple admitió que reducía el rendimiento de iPhones con baterías gastadas sin avisar a los usuarios.</p><p class="leccion">Ser transparente: un teléfono que se cambia antes de tiempo es basura electrónica.</p></article>
+      <article class="caso"><p class="tag">Salud</p><p class="anio-c">1985–1987</p><h3>Therac-25</h3><p>Fallas de software en una máquina de radioterapia causaron sobredosis de radiación; algunos pacientes murieron.</p><p class="leccion">El software crítico se prueba a fondo y no se confía sólo en él.</p></article>
+      <article class="caso"><p class="tag">Equidad de género</p><p class="anio-c">2018</p><h3>IA de contratación de Amazon</h3><p>Amazon abandonó un sistema que calificaba peor los currículums de mujeres porque aprendió de contrataciones pasadas.</p><p class="leccion">Un modelo repite los sesgos de sus datos: hay que auditarlos.</p></article>
+      <article class="caso final"><p class="tag">En los tres casos</p><h3>La tecnología funcionaba. Lo que faltó fue preguntarse a quién afectaba.</h3></article>
+    </div>
+  </div>
+  <aside class="nota" data-t="Casos · Axel">Las tarjetas avanzan de lado con el scroll. Sustentabilidad: en 2017 Apple reconoció que una actualización bajaba el rendimiento de iPhones con baterías viejas para evitar apagados; el problema fue no decirlo, porque mucha gente pensó que su teléfono ya no servía. Terminó pagando multas y acuerdos. Salud: el Therac-25 era una máquina de radioterapia controlada por software; quitaron los seguros físicos de modelos anteriores y confiaron en el código, que tenía errores. Entre 1985 y 1987 hubo varias sobredosis, algunas mortales. Equidad de género: en 2018 se supo que Amazon había descartado una IA de reclutamiento que penalizaba currículums con la palabra “mujeres”, porque se entrenó con diez años de contrataciones mayoritariamente de hombres. Nadie la programó para discriminar: aprendió de los datos.</aside>
+</section>
+
+<!-- Actividad -->
+<section class="scene pad actividad" id="actividad" data-g="actividad" data-p="Todos" data-scene>
+  <div class="wrap">
+    <div class="reveal" style="display:flex;flex-direction:column;gap:16px">
+      <p class="kicker">Actividad · Levanten la mano</p>
+      <h2 class="h2">¿Tú qué harías?</h2>
+      <p class="pregunta">Tu jefe te pide lanzar el viernes una app de salud, aunque las pruebas de seguridad todavía no terminan. Si se retrasa, el cliente cancela el contrato.</p>
+    </div>
+    <div class="votos">
+      <button class="voto reveal" style="--d:1" type="button" id="voto-a" data-v="0"><span class="letra">A</span><span class="txt">Lanzarla a tiempo y corregir los errores después.</span><span class="barra-v"><i></i></span><span class="cuenta">0 votos</span></button>
+      <button class="voto reveal" style="--d:2" type="button" id="voto-b" data-v="1"><span class="letra">B</span><span class="txt">Retrasarla y explicar el riesgo por escrito al cliente.</span><span class="barra-v"><i></i></span><span class="cuenta">0 votos</span></button>
+      <button class="voto reveal" style="--d:3" type="button" id="voto-c" data-v="2"><span class="letra">C</span><span class="txt">Lanzar sólo las funciones ya probadas y avisar a los usuarios.</span><span class="barra-v"><i></i></span><span class="cuenta">0 votos</span></button>
+    </div>
+    <div class="pie"><span>Toca una opción para sumar un voto por cada mano levantada.</span><button class="btn" type="button" id="reiniciar">Reiniciar votos</button></div>
+  </div>
+  <aside class="nota" data-t="Actividad · Todos">Leer el dilema y pedir que levanten la mano por A, B o C. Tocar cada opción para contar los votos. Preguntar a una persona de cada opción por qué la eligió. Relacionar con lo visto: la opción A recuerda al Therac-25; la B protege a los usuarios pero tiene un costo; la C busca un punto medio con transparencia. No hay respuesta perfecta, y eso es justamente un dilema.</aside>
+</section>
+
+<!-- Lotería -->
+<section class="scene pad loteria" id="loteria" data-g="loteria" data-p="Todos" data-scene>
+  <div class="wrap">
+    <div class="izq">
+      <div class="mazo reveal" aria-hidden="true">
+        <i style="--k:0;--r:-12deg;--c:var(--blue)"></i><i style="--k:1;--r:-6deg;--c:var(--rose)"></i><i style="--k:2;--r:0deg;--c:var(--gold)"></i><i style="--k:3;--r:6deg;--c:var(--blue)"></i><i style="--k:4;--r:12deg;--c:var(--rose)"></i>
+      </div>
+      <div class="reveal" style="--d:1;display:flex;flex-direction:column;gap:14px">
+        <p class="kicker">Actividad final · Todos juegan</p>
+        <h2 class="h2">¡Lotería de la ética!</h2>
+      </div>
+      <ol class="pasos-l reveal" style="--d:2">
+        <li><b>1</b><span>Escanea el QR con la cámara de tu celular. Funciona con datos móviles.</span></li>
+        <li><b>2</b><span>Elige tu tabla: 9 conceptos de los tres subtemas.</span></li>
+        <li><b>3</b><span>Cantamos un verso y una definición. Si tienes ese concepto, ponle frijol.</span></li>
+        <li><b>4</b><span>¿Llenaste tu tabla? Grita “¡Lotería!” y dinos tu número.</span></li>
+      </ol>
+    </div>
+    <div class="der reveal" style="--d:2">
+      <div class="qr-l" id="qr-loteria"><span>Abre vxelm.github.io/loteria-etica</span></div>
+      <p class="url-l">o entra a <b>vxelm.github.io/loteria-etica</b></p>
+      <a class="btn-l" href="https://vxelm.github.io/loteria-etica/#cantar" target="_blank" rel="noopener">Abrir para cantar ↗</a>
+    </div>
+  </div>
+  <aside class="nota" data-t="Lotería · Todos">Esperar a que todos escaneen el QR y elijan su tabla. Luego abrir “Abrir para cantar” en otra pestaña y ponerla en el proyector. Cantar con la barra espaciadora: leer primero el verso y después la definición. Cuando alguien grite “¡Lotería!”, escribir su número de tabla en “Revisar una tabla”. Si gana, repasar en voz alta dos o tres de sus conceptos. Al terminar, volver a esta pestaña para el cierre.</aside>
+</section>
+
+<!-- Cierre -->
+<section class="scene cierre" id="cierre" data-g="cierre" data-p="Todos" data-scene>
+  <div class="wrap">
+    <p class="kicker reveal">Conclusión</p>
+    <h2 class="reveal" style="--d:1">Los retos de hoy no se resuelven sólo con mejor tecnología, sino con ingenieros que <span class="m">decidan con libertad</span>, <span class="m">conozcan la ley</span> y <span class="m">piensen en las personas</span>.</h2>
+    <div class="rule reveal" style="--d:2;width:200px;height:2px;background:var(--gold)"></div>
+    <p class="preg reveal" style="--d:3">¿Preguntas?</p>
+    <p class="nombres reveal" style="--d:4">Moisés Santa Cruz Rodríguez · Ángel Raúl Flores Gordillo · Axel M. Guzmán Vega</p>
+  </div>
+  <aside class="nota" data-t="Cierre · Todos">Recapitular en una frase cada subtema. Moisés: la tecnología puede ampliar o debilitar nuestra libertad, y quien la diseña decide cuál. Ángel Raúl: la ley marca el mínimo; la educación nos da el criterio cuando la ley no llega. Axel: un buen ingeniero no sólo pregunta si funciona, sino a quién beneficia y a quién daña. Abrir preguntas.</aside>
+</section>
+
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script>
+(function () {
+  var root = document.documentElement;
+  root.classList.add('js');
+  var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var $ = function (s, c) { return (c || document).querySelector(s); };
+  var $$ = function (s, c) { return Array.prototype.slice.call((c || document).querySelectorAll(s)); };
+
+  // Título palabra por palabra
+  var t = $('#titulo');
+  t.innerHTML = t.textContent.split(' ').map(function (w, i) {
+    return '<span class="w" style="--i:' + i + '">' + w + '</span>';
+  }).join(' ');
+
+  // Feed del teléfono
+  var colores = ['#8C2341', '#2B4C6E', '#C08A2E', '#3E6B5A', '#5B3F7A', '#A0485F'];
+  var posts = $('#posts'), html = '';
+  for (var i = 0; i < 18; i++) {
+    var c = colores[i % colores.length];
+    html += '<div class="post" aria-hidden="true"><div class="cab"><span class="av" style="background:' + c + '"></span>' +
+      '<span class="ln" style="width:' + (40 + (i * 17) % 40) + '%"></span></div>' +
+      '<div class="img" style="background:linear-gradient(135deg,' + c + ',#142131)"></div>' +
+      '<div class="ln" style="width:' + (60 + (i * 23) % 35) + '%"></div>' +
+      '<div class="acc"><span>♥ ' + (120 + i * 37) + '</span><span>Comentar</span><span>Compartir</span></div></div>';
+  }
+  posts.innerHTML = html;
+
+  // Aparición con el scroll
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+    }, { threshold: 0.15 });
+    $$('.reveal').forEach(function (el) { io.observe(el); });
+  } else {
+    $$('.reveal').forEach(function (el) { el.classList.add('in'); });
+  }
+
+  function clamp(v) { return Math.max(0, Math.min(1, v)); }
+  function progreso(el) {
+    var r = el.getBoundingClientRect();
+    var span = r.height - innerHeight;
+    if (span <= 0) return clamp((innerHeight - r.top) / (innerHeight + r.height));
+    return clamp(-r.top / span);
+  }
+  function paso(p, n) { return Math.min(n - 1, Math.floor(p * n)); }
+
+  var minutoAnterior = -1;
+  var handlers = {
+    conceptos: function (el, p) {
+      var k = paso(p, 3);
+      $$('.concepto', el).forEach(function (c, i) {
+        c.classList.toggle('on', i === k);
+        c.classList.toggle('antes', i < k);
+      });
+      $$('.pips i', el).forEach(function (d, i) { d.classList.toggle('on', i <= k); });
+    },
+    feed: function (el, p) {
+      var tel = $('.tel', el);
+      var recorrido = -(posts.scrollHeight - tel.clientHeight + 40);
+      el.style.setProperty('--recorrido', recorrido + 'px');
+      var m = Math.round(5 + p * 55);
+      if (m !== minutoAnterior) {
+        minutoAnterior = m;
+        $('#tiempo').textContent = m >= 60 ? '1 h' : m + ' min';
+      }
+      $('#aviso').classList.toggle('on', p > 0.85);
+      $('#feed-mal').classList.toggle('on', p > 0.3);
+      $('#feed-bien').classList.toggle('on', p > 0.62);
+    },
+    linea: function (el, p) {
+      var anio = 2005 + p * 21;
+      $('#anio').textContent = Math.min(2026, Math.floor(anio));
+      $$('.ev', el).forEach(function (ev) { ev.classList.toggle('on', anio >= +ev.dataset.y); });
+      $('#conclusion').classList.toggle('on', p > 0.96);
+    },
+    chat: function (el, p) {
+      $$('.msg', el).forEach(function (m, i) { m.classList.toggle('on', p > 0.05 + i * 0.14); });
+      $('#chat-ley').classList.toggle('on', p > 0.62);
+      $('#chat-edu').classList.toggle('on', p > 0.82);
+    },
+    balanza: function (el, p) {
+      var ang = -14 + p * 28;
+      $('#viga').style.setProperty('--ang', ang.toFixed(2) + 'deg');
+    },
+    casos: function (el, p) {
+      var riel = $('#riel');
+      var max = Math.max(0, riel.scrollWidth - innerWidth);
+      riel.style.setProperty('--tx', (-p * max).toFixed(1) + 'px');
+      var cards = $$('.caso', riel);
+      var k = Math.round(p * (cards.length - 1));
+      cards.forEach(function (c, i) { c.classList.toggle('on', i === k); });
+      $$('.puntos i', el).forEach(function (d, i) { d.classList.toggle('on', i <= k); });
+    },
+    portadilla: function () {}
+  };
+
+  // Posiciones de eventos en la línea del tiempo
+  $$('.ev').forEach(function (ev) { ev.style.setProperty('--x', ((+ev.dataset.y - 2005) / 21 * 100).toFixed(2)); });
+
+  var scenes = $$('[data-scene]');
+  var scrubs = $$('[data-scrub]');
+  var barra = $('#barra'), hero = $('#inicio');
+  var presenta = $('#presenta'), presentaNombre = $('#presenta-nombre');
+  var links = $$('.rail a');
+  var notas = $('#notas'), notasT = $('#notas-titulo'), notasP = $('#notas-texto');
+  var actual = null, pendiente = false;
+
+  function cuadro() {
+    pendiente = false;
+    var max = root.scrollHeight - innerHeight;
+    barra.style.transform = 'scaleX(' + (max > 0 ? scrollY / max : 0) + ')';
+    hero.style.setProperty('--hp', reduce ? 0 : clamp(scrollY / innerHeight).toFixed(3));
+    scrubs.forEach(function (el) {
+      var p = progreso(el);
+      el.style.setProperty('--p', p.toFixed(4));
+      var h = handlers[el.dataset.scrub];
+      if (h) h(el, p);
+    });
+    var cur = scenes[0];
+    scenes.forEach(function (s) { if (s.getBoundingClientRect().top <= innerHeight * 0.45) cur = s; });
+    if (cur !== actual) {
+      actual = cur;
+      var g = cur.dataset.g, quien = cur.dataset.p;
+      links.forEach(function (a) { a.classList.toggle('on', a.dataset.g === g); });
+      if (quien) { presentaNombre.textContent = quien; presenta.classList.remove('vacio'); }
+      else presenta.classList.add('vacio');
+      var n = $('.nota', cur);
+      notasT.textContent = n ? n.dataset.t : 'Notas';
+      notasP.textContent = n ? n.textContent : '';
+    }
+  }
+  function pedir() { if (!pendiente) { pendiente = true; requestAnimationFrame(cuadro); } }
+  addEventListener('scroll', pedir, { passive: true });
+  addEventListener('resize', pedir);
+  cuadro();
+
+  // Navegación con teclado: cada escena y cada paso de las escenas largas
+  function paradas() {
+    var out = [];
+    scenes.forEach(function (s) {
+      var top = s.getBoundingClientRect().top + scrollY;
+      var span = Math.max(0, s.offsetHeight - innerHeight);
+      (s.dataset.stops || '0').split(',').forEach(function (f) { out.push(Math.round(top + parseFloat(f) * span)); });
+    });
+    return out.sort(function (a, b) { return a - b; });
+  }
+  function ir(dir) {
+    var ps = paradas(), y = scrollY, dest = null;
+    if (dir > 0) { for (var i = 0; i < ps.length; i++) if (ps[i] > y + 4) { dest = ps[i]; break; } }
+    else { for (var j = ps.length - 1; j >= 0; j--) if (ps[j] < y - 4) { dest = ps[j]; break; } }
+    if (dest !== null) scrollTo({ top: dest, behavior: reduce ? 'auto' : 'smooth' });
+  }
+  function alternarNotas() {
+    notas.hidden = !notas.hidden;
+    $('#btn-notas').setAttribute('aria-expanded', String(!notas.hidden));
+  }
+  addEventListener('keydown', function (e) {
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    var enBoton = e.target.closest && e.target.closest('button, a, input, textarea');
+    if (e.key === 'ArrowDown' || e.key === 'PageDown' || (e.key === ' ' && !enBoton && !e.shiftKey)) { e.preventDefault(); ir(1); }
+    else if (e.key === 'ArrowUp' || e.key === 'PageUp' || (e.key === ' ' && !enBoton && e.shiftKey)) { e.preventDefault(); ir(-1); }
+    else if (e.key === 'n' || e.key === 'N') alternarNotas();
+  });
+  $('#btn-notas').addEventListener('click', alternarNotas);
+  links.forEach(function (a) {
+    a.addEventListener('click', function (e) {
+      e.preventDefault();
+      var dest = document.getElementById(a.getAttribute('href').slice(1));
+      if (dest) scrollTo({ top: dest.getBoundingClientRect().top + scrollY, behavior: reduce ? 'auto' : 'smooth' });
+    });
+  });
+
+  // QR de la lotería
+  if (typeof qrcode === 'function') {
+    try {
+      var q = qrcode(0, 'M'); q.addData('https://vxelm.github.io/loteria-etica/#jugar'); q.make();
+      $('#qr-loteria').innerHTML = '<img alt="Código QR para abrir la lotería en el celular" src="' + q.createDataURL(8, 2) + '">';
+    } catch (er) {}
+  }
+
+  // Votación
+  var votos = [0, 0, 0];
+  var botones = $$('.voto');
+  function pintar() {
+    var mx = Math.max(1, Math.max.apply(null, votos));
+    botones.forEach(function (b, i) {
+      $('.cuenta', b).textContent = votos[i] + (votos[i] === 1 ? ' voto' : ' votos');
+      $('.barra-v i', b).style.width = (votos[i] / mx * 100) + '%';
+    });
+  }
+  botones.forEach(function (b) { b.addEventListener('click', function () { votos[+b.dataset.v]++; pintar(); }); });
+  $('#reiniciar').addEventListener('click', function () { votos = [0, 0, 0]; pintar(); });
+})();
+</script>
+</body>
+</html>
