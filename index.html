@@ -837,7 +837,7 @@ html:not(.js) .concepto { grid-area: auto; }
   // QR de la lotería
   if (typeof qrcode === 'function') {
     try {
-      var q = qrcode(0, 'M'); q.addData('https://vxelm.github.io/loteria-etica/#jugar'); q.make();
+      var q = qrcode(0, 'M'); q.addData('https://vxelm.github.io/loteria-etica/?v=2#jugar'); q.make();
       $('#qr-loteria').innerHTML = '<img alt="Código QR para abrir la lotería en el celular" src="' + q.createDataURL(8, 2) + '">';
     } catch (er) {}
   }
